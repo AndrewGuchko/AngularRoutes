@@ -12,11 +12,26 @@ import { EditServerComponent } from './servers/edit-server/edit-server.component
 import { ServerComponent } from './servers/server/server.component';
 import { ServersService } from './servers/servers.service';
 import { Routes, RouterModule } from '@angular/router'
-import { PageNotFountComponent } from './page-not-found/page-not-found.component';
-import { appRoutingModule } from './app-routing.module';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { AppRoutingModule } from './app-routing.module';
+import { ActivateGuardService } from './activate-guard.service';
 import { AuthService } from './auth.service';
-import { AuthGuard } from './auth-guard.service';
-import { CanDiactivateGuard } from './servers/edit-server/can-diactivate.service';
+import { CanDeactivateGuard } from './servers/edit-server/can-deactivate-guard';
+import { ErrorPageComponent } from './error-page/error-page.component';
+import { ServerResolver } from './servers/server/server.resolver';
+import { AccessDeniedComponent } from './access-denied/access-denied.component';
+
+const appRoutes: Routes = [
+  { path: '', component: HomeComponent },
+  { path: 'users', component: UsersComponent, children:[
+    { path: ':id/:name', component: UsersComponent }
+  ] },
+  { path: 'servers', component: ServersComponent, children:[
+    { path: ':id/edit', component: EditServerComponent }
+  ] },
+  { path: 'not-found', component: PageNotFoundComponent },
+  { path: '**', redirectTo: '/not-found' }
+];
 
 @NgModule({
   declarations: [
@@ -27,15 +42,17 @@ import { CanDiactivateGuard } from './servers/edit-server/can-diactivate.service
     UserComponent,
     EditServerComponent,
     ServerComponent,
-    PageNotFountComponent
+    PageNotFoundComponent,
+    ErrorPageComponent, 
+    AccessDeniedComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    appRoutingModule
+    AppRoutingModule
   ],
-  providers: [ServersService, AuthService, AuthGuard, CanDiactivateGuard],
+  providers: [ServersService, ActivateGuardService, AuthService, CanDeactivateGuard, ServerResolver],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
